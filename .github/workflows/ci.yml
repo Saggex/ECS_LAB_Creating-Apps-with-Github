@@ -13,11 +13,20 @@
 #
 # See the Lab 3 instructions for details.
 
-# Lab 3: Add a workflow name here
+# Lab 3: Add a workflow name here 
+name: CI Pipeline
+
 
 # Lab 3: Add triggers — right now only manual trigger is set
-on:
-  workflow_dispatch:
+on: 
+  workflow_dispatch: # allows manual trigger from the Actions tab in GitHub UI
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main   
+  
 
 # Lab 3: Define jobs — each group of steps below needs to be wrapped
 # in a proper job with runs-on, defaults (working-directory), and steps.
@@ -37,17 +46,22 @@ on:
 #        with:
 #          python-version: "3.12"
 #      - run: pip install -r requirements.txt
-#      - run: pytest --tb=short
+#      - run: pytest --tb=short   
+jobs:
 
-# ── .NET steps (should run in the dotnet/ directory) ──
-#      - uses: actions/checkout@v4
-#      - uses: actions/setup-dotnet@v4
-#        with:
-#          dotnet-version: "10.x"
-#      - run: dotnet restore Api.Tests
-#      - run: dotnet build --no-restore
-#      - run: dotnet build Api.Tests --no-restore
-#      - run: dotnet test Api.Tests --no-build
+  test-python:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: python/
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - run: pytest --tb=short
+      - run: pip install ruff && ruff check .
 
 # Lint steps (Lab 3 challenge — add these to your jobs):
 #   Node.js: npx eslint .
