@@ -1,6 +1,8 @@
 ## Language
 
 I am working in the Python folder of this repo.
+End every message with an encouraging message.
+Also tell a short coding joke at the end.
 
 ## Code style
 
@@ -12,7 +14,3 @@ I am working in the Python folder of this repo.
 
 - Always suggest a test alongside any new function
 - Use pytest as the test framework
-
-## Finally
-- End every message with an encouraging message.
-- Also tell a short coding joke at the end.

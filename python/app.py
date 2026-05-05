@@ -9,7 +9,8 @@ from flask_cors import CORS
 app = Flask(__name__, static_folder="../frontend", static_url_path="/")
 CORS(app)
 
-DATA_FILE = Path(__file__).resolve().parent.parent / "data" / "experiments.json"
+DATA_FILE = Path(__file__).resolve().parent.parent / \
+    "data" / "experiments.json"
 
 
 def read_experiments():
@@ -87,13 +88,23 @@ def get_summary():
         if verdict in by_verdict:
             by_verdict[verdict] += 1
 
-    # TODO: Add by_tool grouping — Lab 2
+    # Group experiments by tool name, with verdict counts for each tool
     # Add a by_tool dict that groups verdict counts per tool.
     # The frontend expects: { "<tool name>": { "Faster": 0, "Same": 0, ... } }
+    by_tool = {}
+    for exp in experiments:
+        tool = exp.get("tool", "Unknown")
+        verdict = exp.get("verdict", "")
+        if tool not in by_tool:
+            by_tool[tool] = {"Faster": 0, "Same": 0,
+                             "Slower": 0, "Surprising": 0}
+        if verdict in by_tool[tool]:
+            by_tool[tool][verdict] += 1
 
     return jsonify({
         "total": len(experiments),
         "by_verdict": by_verdict,
+        "by_tool": by_tool,
     })
 
 
