@@ -30,6 +30,9 @@ jobs:
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v4
+   
+      - name: Copy experiments.json to frontend folder
+        run: cp data/experiments.json frontend/
 
       - name: Upload frontend folder as Pages artifact
         uses: actions/upload-pages-artifact@v3
