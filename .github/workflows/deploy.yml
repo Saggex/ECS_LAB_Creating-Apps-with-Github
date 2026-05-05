@@ -3,7 +3,10 @@
 name: Deploy to Pages
 on:
   workflow_dispatch:
-  push:
+  workflow_run:
+    workflows: ["CI Pipeline"]
+    types:
+      - completed
     branches: [main]
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
@@ -19,6 +22,7 @@ concurrency:
 
 jobs:
   deploy:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     # The deployment job runs in the github-pages environment
     environment:
       name: github-pages
