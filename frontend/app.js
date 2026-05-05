@@ -1,9 +1,35 @@
 // API base URL — uses the same origin since all backends serve the frontend as static files.
-// If the frontend is opened as a standalone file, override this to the correct backend URL.
+// If the frontend is opened as a standalone file, the browser cannot use a relative API path.
 const API_BASE = "";
-
-// Path to the static JSON file used as a fallback when no API is running (e.g. GitHub Pages)
 const STATIC_DATA_URL = "experiments.json";
+const LOCAL_API_BASES = ["http://localhost:5000", "http://localhost:3000", "http://localhost:5001"];
+
+function getApiBase() {
+  if (window.location.protocol === "file:") {
+    return LOCAL_API_BASES[0];
+  }
+  return API_BASE;
+}
+
+async function fetchApi(path, options) {
+  const base = getApiBase();
+  const url = `${base}${path}`;
+
+  try {
+    return await fetch(url, options);
+  } catch (err) {
+    if (window.location.protocol === "file:") {
+      for (const altBase of LOCAL_API_BASES.slice(1)) {
+        try {
+          return await fetch(`${altBase}${path}`, options);
+        } catch (error) {
+          // Try the next host.
+        }
+      }
+    }
+    throw err;
+  }
+}
 
 // ── Navigation ──────────────────────────────────────────────
 
@@ -26,7 +52,7 @@ async function loadEntries() {
   const container = document.getElementById("entries-list");
   try {
     let entries;
-    const apiRes = await fetch(`${API_BASE}/entries`).catch(() => null);
+    const apiRes = await fetchApi("/entries").catch(() => null);
     if (apiRes && apiRes.ok) {
       entries = await apiRes.json();
     } else {
@@ -87,7 +113,7 @@ async function loadDashboard() {
 
   try {
     let data;
-    const apiRes = await fetch(`${API_BASE}/summary`).catch(() => null);
+    const apiRes = await fetchApi("/summary").catch(() => null);
     if (apiRes && apiRes.status === 501) {
       messageEl.innerHTML =
         '<p class="not-implemented">Summary not yet available — implement the <code>/summary</code> endpoint in Lab 2 to unlock the dashboard charts.</p>';
@@ -200,7 +226,7 @@ document.getElementById("add-form").addEventListener("submit", async (e) => {
   };
 
   try {
-    const res = await fetch(`${API_BASE}/entries`, {
+    const res = await fetchApi("/entries", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(entry),
