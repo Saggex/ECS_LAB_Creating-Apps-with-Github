@@ -1,6 +1,6 @@
 ## Language
 
-I am working in the [node/python/dotnet] folder of this repo.
+I am working in the Python folder of this repo.
 
 ## Code style
 
@@ -11,7 +11,7 @@ I am working in the [node/python/dotnet] folder of this repo.
 ## Testing
 
 - Always suggest a test alongside any new function
-- Use [Jest/pytest/xUnit] as the test framework
+- Use pytest as the test framework
 
 ## Finally
 - End every message with an encouraging message.
